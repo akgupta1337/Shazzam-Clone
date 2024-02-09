@@ -16,15 +16,14 @@ from scipy.ndimage.morphology import (binary_erosion,
 
 class Fingerprint:
 
-    def __init__(self,audio_path):
-        self.audio_path = audio_path
+    def __init__(self):
         self.DEFAULT_WINDOW_SIZE = 4096
         self.DEFAULT_FS = 44100
         self.DEFAULT_OVERLAP_RATIO = 0.5
         self.DEFAULT_FAN_VALUE = 5 
         self.DEFAULT_AMP_MIN = 10
         self.PEAK_NEIGHBORHOOD_SIZE = 10
-        self.wsize = self.DEFAULT_WINDOW_SIZE,
+        self.wsize = self.DEFAULT_WINDOW_SIZE
         self.wratio = self.DEFAULT_OVERLAP_RATIO
         self.fan_value = self.DEFAULT_FAN_VALUE
         self.amp_min  = self.DEFAULT_AMP_MIN
@@ -33,26 +32,59 @@ class Fingerprint:
         self.MIN_HASH_TIME_DELTA = 0
         self.MAX_HASH_TIME_DELTA = 200
         self.FINGERPRINT_REDUCTION = 20
-    
-    def audio_process(self):
+        
+    def shazam_similarity(self,original_hashes, test_hashes, offset_threshold=100):
+        matches = 0
+        for hash1, offset1 in original_hashes:
+            for hash2, offset2 in test_hashes:
+                if abs(offset1 - offset2) <= offset_threshold and hash1 == hash2:
+                    matches += 1
+                    break  # Move to the next hash in the original song
+
+        # Calculate the similarity score
+        return matches
+
+    def shazzam(self,audio_path):
+        self.audio_hash = self.audio_process(audio_path)
+        fig =''
+        lookup = {}
+        with open ('database.txt','r') as file:
+            while True:
+                st = file.readline()
+                if not st:
+                    break
+                if st == "\n":
+                    score = self.shazam_similarity(eval(fig),self.audio_hash)
+                    lookup[song_name] = score
+                    fig = ''
+                if st.startswith('song'):
+                    song_name = st.split(":")[1]
+                    lookup[song_name] = 0
+                else:
+                    fig += st
+                    
+        Key_max = max(lookup, key = lookup.get)  
+        return Key_max
+        
+        
+    def audio_process(self,audio_path):
+        self.audio_path = audio_path
         sound = AudioSegment.from_wav(self.audio_path)
         sound = sound.set_channels(1)
-        sound.export(f"{self.audio_path}Mono.wav", format="wav")
+        sound.export(f"mono{self.audio_path}", format="wav")
         
-        self.audiofile = AudioSegment.from_file(f"{self.audio_path}Mono.wav")
+        self.audiofile = AudioSegment.from_file(f"mono{self.audio_path}")
         self.channel_samples = np.frombuffer(self.audiofile.raw_data, np.int16)
-        self.audio_hash = set()
+        audio_hash = set()
         self.hashes = (self.fingerprint(self.channel_samples))
-        self.audio_hash |= set(self.hashes)
+        audio_hash |= set(self.hashes)
         
-        return self.audio_hash
+        return audio_hash
         
     def fingerprint(self,channel_samples) :
-        Fs: int = self.DEFAULT_FS,
-        wsize: int = self.DEFAULT_WINDOW_SIZE,
-        wratio: float = self.DEFAULT_OVERLAP_RATIO,
-        fan_value: int = self.DEFAULT_FAN_VALUE,
-        amp_min: int = self.DEFAULT_AMP_MIN
+        Fs = self.DEFAULT_FS
+        fan_value = self.DEFAULT_FAN_VALUE
+        amp_min = self.DEFAULT_AMP_MIN
         """
         FFT the channel, log transform output, find local maxima, then return locally sensitive hashes.
 
@@ -67,21 +99,21 @@ class Fingerprint:
         # FFT the signal and extract frequency components
         arr2D = mlab.specgram(
             channel_samples,
-            NFFT=wsize,
+            NFFT=self.wsize,
             Fs=Fs,
             window=mlab.window_hanning,
-            noverlap=int(wsize * wratio))[0]
+            noverlap=int(self.wsize * self.wratio))[0]
 
         # Apply log transform since specgram function returns linear array. 0s are excluded to avoid np warning.
         arr2D = 10 * np.log10(arr2D, out=np.zeros_like(arr2D), where=(arr2D != 0))
 
-        local_maxima = self.get_2D_peaks(arr2D, plot=False, amp_min=amp_min)
+        local_maxima = self.get_2D_peaks(arr2D)
         # return hashes
-        return self.generate_hashes(local_maxima, fan_value=fan_value)
+        return self.generate_hashes(local_maxima)
     
     
-    def get_2D_peaks(self,arr2D: np.array, plot: bool = False):
-        amp_min: int = self.DEFAULT_AMP_MIN
+    def get_2D_peaks(self,arr2D):
+        amp_min = self.DEFAULT_AMP_MIN
         """
         Extract maximum peaks from the spectogram matrix (arr2D).
 
