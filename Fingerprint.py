@@ -45,6 +45,7 @@ class Fingerprint:
         return matches
 
     def shazzam(self,audio_path):
+        
         self.audio_hash = self.audio_process(audio_path)
         fig =''
         lookup = {}
@@ -71,9 +72,11 @@ class Fingerprint:
         self.audio_path = audio_path
         sound = AudioSegment.from_wav(self.audio_path)
         sound = sound.set_channels(1)
-        sound.export(f"mono{self.audio_path}", format="wav")
+        if ("/") in self.audio_path:
+            self.audio_path = audio_path.split("/")[-1]
+        sound.export(f"converted_mono/mono_{self.audio_path}", format="wav")
         
-        self.audiofile = AudioSegment.from_file(f"mono{self.audio_path}")
+        self.audiofile = AudioSegment.from_file(f"converted_mono/mono_{self.audio_path}")
         self.channel_samples = np.frombuffer(self.audiofile.raw_data, np.int16)
         audio_hash = set()
         self.hashes = (self.fingerprint(self.channel_samples))
