@@ -1,13 +1,15 @@
 from logic.Fingerprint import Fingerprint
 import os
 
-# Define the directory path
+
+'''
+This example is if you have a list of recorded songs in the folder 
+recorded_audios and you want SHAZZAM ALL OF THEM
+'''
 directory = "recorded_audios"
 
-# Initialize an empty list to store song names with relative paths
 song_list = []
 
-# Iterate over all files in the directory
 for root, dirs, files in os.walk(directory):
     for file in files:
         if file.endswith(".wav"):
