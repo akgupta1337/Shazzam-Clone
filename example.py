@@ -1,4 +1,4 @@
-from Fingerprint import Fingerprint
+from logic.Fingerprint import Fingerprint
 
 file_name = ["recorded_audios/recorded_classical.wav","recorded_audios/recorded_jazz.wav","recorded_audios/recorded_pop.wav"]
 
