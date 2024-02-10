@@ -10,7 +10,7 @@ IMPORTANT: RECORD IN SILENCE AND MAKE SURE THERE IS NO NOISE!
 Also make sure to dont keep your phone music volume at full for recording otherwise
 it won't be captured
 '''
-duration = 15
+duration = 15   #set song duration
 sample_rate = 44100  
 
 print("Recording...")
@@ -19,7 +19,7 @@ sd.wait()
 
 max_amplitude = np.max(np.abs(audio_data))
 
-target_amplitude = 5 #set as per your choice
+target_amplitude = 4 #set amplification as per your choice
 scaling_factor = target_amplitude / max_amplitude
 audio_data_scaled = audio_data * scaling_factor
 
