@@ -23,12 +23,11 @@ Shazzam Clone is a Python project that implements audio fingerprinting using the
     ```
 3. Run the example.py script to perform audio fingerprinting and song identification:
     ```bash
-    python example1.py
+    python microphone_example.py
     ```
 
 ## Project Structure
 - **logic**: Contains the Fingerprint class for audio fingerprinting.
-- **Example**: Contains the example script (example.py) for using the Fingerprint class.
 - **converted_mono**: Stores mono audio files converted during the fingerprinting process.
 
 ## License
