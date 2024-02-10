@@ -1,6 +1,10 @@
 from logic.Fingerprint import Fingerprint
 import os
 
+'''
+For adding multiple songs from the directory original_audios
+in our database
+'''
 directory = "original_audios"
 
 song_list = []
