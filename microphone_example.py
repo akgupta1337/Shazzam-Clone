@@ -5,8 +5,9 @@ from logic.Fingerprint import Fingerprint
 
 '''
 For recording audio from microphone and then SHAZAAMING IT!
+IMPORTANT: RECORD IN SILENCE AND MAKE SURE THERE IS NO NOISE!
 '''
-duration = 15  
+duration = 15
 sample_rate = 44100  
 
 print("Recording...")
@@ -15,7 +16,7 @@ sd.wait()
 
 max_amplitude = np.max(np.abs(audio_data))
 
-target_amplitude = 3  
+target_amplitude = 1.5
 scaling_factor = target_amplitude / max_amplitude
 audio_data_scaled = audio_data * scaling_factor
 
@@ -31,9 +32,9 @@ engine = Fingerprint()
 
 song_name = "recorded_audio.wav"
 print("------------------------------")
-print(f"Processing: {song_name}")
+print(f"SHAZZMING!: {song_name}")
 
-result = engine.shazzam(song_name)
+identified_song = engine.shazzam(song_name)
 
-print("Predicted song =>",result)
+print("Predicted song =>",identified_song)
 print("------------------------------")

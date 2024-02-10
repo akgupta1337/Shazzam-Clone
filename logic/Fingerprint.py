@@ -46,7 +46,7 @@ class Fingerprint:
         self.audio_hash = self.audio_process(audio_path)
         fig =''
         lookup = {}
-        with open ('database.txt','r') as file:
+        with open ('database/database.txt','r') as file:
             while True:
                 st = file.readline()
                 if not st:
