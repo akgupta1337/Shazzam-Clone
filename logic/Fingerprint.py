@@ -7,6 +7,7 @@ from hashlib import sha1
 from operator import itemgetter
 from pydub import AudioSegment
 import hashlib
+import time
 from scipy.ndimage.filters import maximum_filter
 from scipy.ndimage.morphology import (binary_erosion,
                                       generate_binary_structure,
@@ -33,19 +34,15 @@ class Fingerprint:
         self.MAX_HASH_TIME_DELTA = 200
         self.FINGERPRINT_REDUCTION = 20
         
-    def shazam_similarity(self,original_hashes, test_hashes, offset_threshold=100):
+    def shazam_similarity(self, original_hashes,test_hash,songn):
         matches = 0
-        for hash1, offset1 in original_hashes:
-            for hash2, offset2 in test_hashes:
-                if abs(offset1 - offset2) <= offset_threshold and hash1 == hash2:
-                    matches += 1
-                    break  # Move to the next hash in the original song
-
-        # Calculate the similarity score
+        for hash in test_hash:
+            if hash in original_hashes:
+                matches+=1
         return matches
 
     def shazzam(self,audio_path):
-        
+        start = time.time()
         self.audio_hash = self.audio_process(audio_path)
         fig =''
         lookup = {}
@@ -55,7 +52,7 @@ class Fingerprint:
                 if not st:
                     break
                 if st == "\n":
-                    score = self.shazam_similarity(eval(fig),self.audio_hash)
+                    score = self.shazam_similarity(eval(fig),self.audio_hash,song_name)
                     lookup[song_name] = score
                     fig = ''
                 if st.startswith('song'):
@@ -63,9 +60,21 @@ class Fingerprint:
                     lookup[song_name] = 0
                 else:
                     fig += st
-                    
-        Key_max = max(lookup, key = lookup.get)  
+        
+        Key_max = max(lookup, key = lookup.get)
+        print("\nTotal time taken:",time.time() - start)  
         return Key_max
+        
+    def add_song(self,audio_path):
+        song_hash = self.audio_process(audio_path)
+        if ("/") in audio_path:
+            audio_path = audio_path.split("/")[-1]
+        with open ("database.txt","a") as file:
+            file.write(f"song:{audio_path}")
+            file.write("\n")
+            file.write(str(song_hash))
+            file.write("\n\n")
+        print("Succesfully added:",audio_path)
         
         
     def audio_process(self,audio_path):
@@ -79,9 +88,11 @@ class Fingerprint:
         self.audiofile = AudioSegment.from_file(f"converted_mono/mono_{self.audio_path}")
         self.channel_samples = np.frombuffer(self.audiofile.raw_data, np.int16)
         audio_hash = set()
-        self.hashes = (self.fingerprint(self.channel_samples))
+
+        self.hashes= (self.fingerprint(self.channel_samples))
         audio_hash |= set(self.hashes)
         
+
         return audio_hash
         
     def fingerprint(self,channel_samples) :
@@ -112,6 +123,7 @@ class Fingerprint:
 
         local_maxima = self.get_2D_peaks(arr2D)
         # return hashes
+
         return self.generate_hashes(local_maxima)
     
     
@@ -209,10 +221,8 @@ class Fingerprint:
                     t1 = peaks[i][idx_time]
                     t2 = peaks[i + j][idx_time]
                     t_delta = t2 - t1
-
                     if self.MIN_HASH_TIME_DELTA <= t_delta <= self.MAX_HASH_TIME_DELTA:
                         h = hashlib.sha1(f"{str(freq1)}|{str(freq2)}|{str(t_delta)}".encode('utf-8'))
-
-                        hashes.append((h.hexdigest()[0:self.FINGERPRINT_REDUCTION], t1))
+                        hashes.append((h.hexdigest()[0:self.FINGERPRINT_REDUCTION]))
 
         return hashes

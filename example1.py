@@ -17,7 +17,6 @@ for root, dirs, files in os.walk(directory):
             song_list.append(f"recorded_audios/{relative_path}")
 
 
-song_list = ["recorded_audios/recorded_classical.wav","recorded_audios/recorded_jazz.wav","recorded_audios/recorded_pop.wav"]
 
 engine = Fingerprint()
 
