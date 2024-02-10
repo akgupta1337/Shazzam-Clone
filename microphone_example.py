@@ -16,7 +16,7 @@ sd.wait()
 
 max_amplitude = np.max(np.abs(audio_data))
 
-target_amplitude = 1.5
+target_amplitude = 5
 scaling_factor = target_amplitude / max_amplitude
 audio_data_scaled = audio_data * scaling_factor
 

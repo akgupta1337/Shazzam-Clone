@@ -24,7 +24,7 @@ for song_name in song_list:
     print("----------------------------------")
     result = engine.shazzam(song_name)
     song_name = song_name.split("/")[-1]
-    print(f"Processing: {song_name}")
+    print(f"SHAZZAMING!: {song_name}")
     print("Predicted song =>",result,end='')
     print("----------------------------------\n")
 
