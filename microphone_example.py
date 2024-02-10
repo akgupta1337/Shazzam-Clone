@@ -21,7 +21,7 @@ scaling_factor = target_amplitude / max_amplitude
 audio_data_scaled = audio_data * scaling_factor
 
 # Save recording to a WAV file
-filename = "path.wav"
+filename = "recorded_audio.wav"
 
 wavfile.write(filename, sample_rate, audio_data_scaled)
 
@@ -29,15 +29,13 @@ print(f"Recording saved as {filename}")
 
 
 
-# '''
-# This example if you just want to SHAZZAM ONE SONG and it exist in parent directory!
-# '''
+engine = Fingerprint()
 
-# engine = Fingerprint()
+song_name = "recorded_audio.wav"
+print("------------------------------")
+print(f"Processing: {song_name}")
 
-# song_name = "path.wav"
-# print(f"Processing: {song_name}")
+result = engine.shazzam(song_name)
 
-# result = engine.shazzam(song_name)
-
-# print("Predicted song =>",result)
+print("Predicted song =>",result)
+print("------------------------------")
