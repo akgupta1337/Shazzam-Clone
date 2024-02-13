@@ -50,5 +50,5 @@ if __name__ == "__main__":
     output_filename = "recorded_audio.mp3"
     duration = 10
     record_audio(filename, duration)
-    convert_to_mp3(filename, output_filename)
+    # convert_to_mp3(filename, output_filename)
     print(f"Audio recorded and saved as {output_filename}")
