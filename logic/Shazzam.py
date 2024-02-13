@@ -103,7 +103,7 @@ class Shazzam:
         except FileNotFoundError:
             file_exist = False
         for file_name in os.listdir(path):
-            if file_name.endswith('.wav') or file_name.endswith('.mp3'):
+            if file_name.endswith(('.wav','.mp3','.m4a', '.ogg')):
                 song_name = file_name[:-4]
                 if file_exist and song_name in old.song_name.unique():
                     print(f"{song_name} already fingerprinted...")
