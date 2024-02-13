@@ -7,7 +7,6 @@ Shazzam Clone is a Python project that implements audio fingerprinting using the
 - Audio fingerprinting using the Shazam algorithm.
 - Extracting audio features and generating hashes for comparison.
 - Comparing audio signatures to identify songs.
-- Using pandas .pkl as database
 
 ## Requirements
 - Python 3.x
