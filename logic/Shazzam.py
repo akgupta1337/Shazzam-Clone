@@ -171,5 +171,5 @@ class Shazzam:
 
 if __name__ == '__main__':
     engine = Shazzam()
-    engine.add_songs()
-    engine.match_song('pp.wav')
+    # engine.add_songs()
+    engine.match_song('sean_secs.wav')
