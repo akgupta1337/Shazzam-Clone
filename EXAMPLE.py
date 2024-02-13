@@ -5,8 +5,7 @@ engine = Shazzam()
 
 '''
 this will add songs present in 'mp3' folder to database
-run it only once to load hashes in database, after that comment it out 
-and only run match_song()
+run, don't worry if song is already added, it wont over-write so saves time :)
 '''
 engine.add_songs()
 

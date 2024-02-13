@@ -97,10 +97,21 @@ class Shazzam:
         path = './mp3'
         hash_df = pd.DataFrame(columns=['song_id', 'song_name', 'freq1', 'time1', 'freq2', 'time2', 'offset', 'hash'])
         song_id = 1
+        file_exist=True
+        try:
+            old = pd.read_pickle('database/Database.pkl')
+        except FileNotFoundError:
+            file_exist = False
         for file_name in os.listdir(path):
-
-            if file_name.endswith('.wav'):
+            if file_name.endswith('.wav') or file_name.endswith('.mp3'):
                 song_name = file_name[:-4]
+                if file_exist and song_name in old.song_name.unique():
+                    print(f"{song_name} already fingerprinted...")
+                    add_to_db = False
+                    continue
+                else:
+                    add_to_db = True
+                print("-----------------------------------------------------------")
                 print(f'Started reading file: {song_name} ...')
                 channels = self.load_file(os.path.join('./mp3', file_name))
 
@@ -112,15 +123,16 @@ class Shazzam:
                     hashes.loc[:, 'song_id'] = song_id
                     hashes.loc[:, 'song_name'] = song_name
                     hash_df = hash_df._append(hashes)
-                print(f'Completed reading file: {song_name} ...\n')
+                print(f'Completed reading file: {song_name} ...')
+                print("------------------------------------------------------------\n")
                 song_id += 1
-
-        hash_df = hash_df.drop_duplicates(subset=['song_id', 'song_name', 'time1', 'hash'])
-        hash_df.reset_index(drop=True, inplace=True)
-        hash_df = hash_df[['song_id', 'song_name', 'freq1', 'time1', 'freq2', 'time2', 'offset', 'hash']]
-        hash_df.to_pickle('database/Database.pkl')
-        return hash_df
-
+        if add_to_db:
+            hash_df = hash_df.drop_duplicates(subset=['song_id', 'song_name', 'time1', 'hash'])
+            hash_df.reset_index(drop=True, inplace=True)
+            hash_df = hash_df[['song_id', 'song_name', 'freq1', 'time1', 'freq2', 'time2', 'offset', 'hash']]
+            hash_df.to_pickle('database/Database.pkl')
+            return None
+        return None
 
 
     def match_song(self,song_name):
@@ -162,14 +174,14 @@ class Shazzam:
 
 
         best_match = sorted(matches, key=lambda x: x[2] if type(x[2]) == int else 0)[-1]
-
+        print("\n------------------------------------------------------------")
         print('Best Match found in mp3 directory:')
         print(f'Song id: {best_match[0]}')
         print(f'Song name: "{best_match[1]}"')
         print(f'Match time: {best_match[3]}')
-
+        print("------------------------------------------------------------\n")
 
 if __name__ == '__main__':
     engine = Shazzam()
-    # engine.add_songs()
+    engine.add_songs()
     engine.match_song('sean_secs.wav')
